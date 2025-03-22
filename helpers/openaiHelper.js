@@ -14,12 +14,10 @@ export const processTextsWithAI = async texts => {
   - chain: the chain of the transaction [ethereum, base, zksync, mantle, stellar, polkadot, worldchain].
   
   Only return the JSON, nothing else. Without any other text or comments.
-  In the "description" field, return a description of the transaction, in the language of the text, describing deeply the future transaction.
-  In the "message" field, return a message to the user, in the language of the text, describing the transaction.
-  
+  In the "description" field, return a description of the transaction, describing deeply the future transaction.
+  In the "message" field, return a message to the user, describing the transaction.
 
-  Text: ${texts.join('\n')}
-  `;
+  Text: ${texts.join('\n')}`;
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
