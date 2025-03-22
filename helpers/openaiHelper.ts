@@ -1,6 +1,7 @@
 import openai from '../config/openai.js';
+import { TransactionResult } from '../types';
 
-export const processTextsWithAI = async texts => {
+export const processTextsWithAI = async (texts: string[]): Promise<TransactionResult> => {
   if (!texts || !Array.isArray(texts)) {
     throw new Error('Texts must be provided as an array of strings');
   }
@@ -26,5 +27,8 @@ export const processTextsWithAI = async texts => {
   });
 
   const content = completion.choices[0].message.content;
-  return JSON.parse(content);
+  if (!content) {
+    throw new Error('No content returned from OpenAI');
+  }
+  return JSON.parse(content) as TransactionResult;
 };

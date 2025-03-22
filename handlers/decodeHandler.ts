@@ -1,12 +1,9 @@
+import { Request, Response } from 'express';
 import { processTextsWithAI } from '../helpers/index.js';
 import { generateTx } from '../helpers/actions.js';
 import { getChainId } from '../config/chains.js';
-/**
- * Handler for decoding text using OpenAI API
- * @param {Object} req - Express request object with body containing array of texts to decode
- * @param {Object} res - Express response object
- */
-export const decodeHandler = async (req, res) => {
+
+export const decodeHandler = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { texts } = req.body;
 
@@ -17,7 +14,6 @@ export const decodeHandler = async (req, res) => {
       });
     }
 
-    // Process texts with OpenAI helper
     const result = await processTextsWithAI(texts);
     const tx = await generateTx(result);
 
@@ -32,7 +28,7 @@ export const decodeHandler = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       status: 'error',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 };

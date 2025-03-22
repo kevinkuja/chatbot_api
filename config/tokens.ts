@@ -1,5 +1,7 @@
+import { Token, TokenList } from '../types';
+
 export const NATIVE = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-export const TOKENS = {
+export const TOKENS: TokenList = {
   [1]: {
     // Ethereum
     ETH: {
@@ -137,6 +139,6 @@ export const TOKENS = {
   },
 };
 
-export const getTokenAddress = (chain, token) => {
+export const getTokenAddress = (chain: number, token: string): Token => {
   return TOKENS[chain][token.toUpperCase()];
 };

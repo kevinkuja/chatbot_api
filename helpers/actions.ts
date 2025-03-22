@@ -1,35 +1,34 @@
-import { encodeFunctionData, parseAbi, parseUnits } from 'viem';
+import { encodeFunctionData, parseAbi, parseUnits, Address } from 'viem';
 import { getTokenAddress, NATIVE } from '../config/tokens.js';
 import { getChainId } from '../config/chains.js';
+import { TransactionResult, EVMTransaction } from '../types';
 
-const erc20Abi = ['function transfer(address, uint256)'];
-export const generateTx = result => {
+const erc20Abi = ['function transfer(address, uint256)'] as const;
+
+export const generateTx = (result: TransactionResult): Promise<EVMTransaction | null> => {
   switch (result.action) {
     case 'transfer':
       return generateTransferTx(result);
     default:
-      return null;
+      return Promise.resolve(null);
   }
 };
 
-const generateTransferTx = async result => {
+const generateTransferTx = async (result: TransactionResult): Promise<EVMTransaction | null> => {
   switch (result.chain) {
-    case 'polkadot':
-      return generatePolkadotTransferTx(result);
-    case 'stellar':
-      return generateStellarTransferTx(result);
     default:
       return generateEVMTransferTx(result);
   }
 };
-const generateEVMTransferTx = async result => {
+
+const generateEVMTransferTx = async (result: TransactionResult): Promise<EVMTransaction> => {
   const chain = getChainId(result.chain);
-  const token = getTokenAddress(chain, result.token);
+  const token = getTokenAddress(chain as number, result.token);
   const amount = parseUnits(result.amount.toString(), token.decimals);
   const tx = encodeFunctionData({
     abi: parseAbi(erc20Abi),
     functionName: 'transfer',
-    args: [result.to, amount],
+    args: [result.to as Address, amount],
   });
 
   return {

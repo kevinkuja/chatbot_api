@@ -8,6 +8,6 @@ export const CHAINS = {
   WORLDCHAIN: 480,
 };
 
-export const getChainId = chain => {
-  return CHAINS[chain.toUpperCase()];
+export const getChainId = (chain: string): number | string => {
+  return CHAINS[chain.toUpperCase() as keyof typeof CHAINS];
 };
