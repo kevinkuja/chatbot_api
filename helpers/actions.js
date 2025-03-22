@@ -1,27 +1,29 @@
 import { encodeFunctionData, parseAbi, parseUnits } from 'viem';
-import { TOKENS, NATIVE } from '../config/tokens.js';
+import { getTokenAddress, NATIVE } from '../config/tokens.js';
+import { getChainId } from '../config/chains.js';
 
 const erc20Abi = ['function transfer(address, uint256)'];
-export const generateTx = (chain, result) => {
+export const generateTx = result => {
   switch (result.action) {
     case 'transfer':
-      return generateTransferTx(chain, result);
+      return generateTransferTx(result);
     default:
       return null;
   }
 };
 
-const generateTransferTx = async (chain, result) => {
-  switch (chain) {
+const generateTransferTx = async result => {
+  switch (result.chain) {
     case 'polkadot':
-      return generatePolkadotTransferTx(chain, result);
+      return generatePolkadotTransferTx(result);
     case 'stellar':
-      return generateStellarTransferTx(chain, result);
+      return generateStellarTransferTx(result);
     default:
-      return generateEVMTransferTx(chain, result);
+      return generateEVMTransferTx(result);
   }
 };
-const generateEVMTransferTx = async (chain, result) => {
+const generateEVMTransferTx = async result => {
+  const chain = getChainId(result.chain);
   const token = getTokenAddress(chain, result.token);
   const amount = parseUnits(result.amount.toString(), token.decimals);
   const tx = encodeFunctionData({
@@ -35,8 +37,4 @@ const generateEVMTransferTx = async (chain, result) => {
     value: token.address === NATIVE ? amount.toString() : '0',
     data: token.address !== NATIVE ? tx : null,
   };
-};
-
-const getTokenAddress = (chain, token) => {
-  return TOKENS[chain][token.toUpperCase()];
 };

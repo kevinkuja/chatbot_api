@@ -136,3 +136,7 @@ export const TOKENS = {
     },
   },
 };
+
+export const getTokenAddress = (chain, token) => {
+  return TOKENS[chain][token.toUpperCase()];
+};

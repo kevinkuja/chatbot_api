@@ -11,7 +11,8 @@ export const processTextsWithAI = async texts => {
   - amount: the numeric value being transferred or swapped.
   - token: the currency/token being used.
   - to: the recipient address or destination.
-
+  - chain: the chain of the transaction [ethereum, base, zksync, mantle, stellar, polkadot, worldchain].
+  
   Only return the JSON, nothing else. Without any other text or comments.
   In the "description" field, return a description of the transaction, in the language of the text, describing deeply the future transaction.
   In the "message" field, return a message to the user, in the language of the text, describing the transaction.
