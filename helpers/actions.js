@@ -32,8 +32,8 @@ const generateEVMTransferTx = async (chain, result) => {
 
   return {
     to: token.address,
-    value: token.address === NATIVE ? amount : 0,
-    data: tx,
+    value: token.address === NATIVE ? amount.toString() : '0',
+    data: token.address !== NATIVE ? tx : null,
   };
 };
 
