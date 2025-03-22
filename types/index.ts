@@ -10,7 +10,7 @@ export interface TokenList {
 }
 
 export interface TransactionResult {
-  action: 'transfer';
+  action: 'transfer' | 'invest';
   amount: number;
   token: string;
   to: string;

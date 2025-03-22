@@ -8,11 +8,16 @@ export const processTextsWithAI = async (texts: string[]): Promise<TransactionRe
 
   const prompt = `
   Interpret the following text and extract the following fields in JSON format:
-  - action: should be one of ["transfer"]. If no valid action is found, return an error.
-  - amount: the numeric value being transferred or swapped.
+  - action: should be one of ["transfer", "invest"]. If no valid action is found, return an error.
+  - amount: the numeric value being transferred, swapped or invested.
   - token: the currency/token being used.
-  - to: the recipient address or destination.
   - chain: the chain of the transaction [ethereum, base, zksync, mantle, stellar, polkadot, worldchain].
+
+  If transfer, extract the following fields:
+  - to: the recipient address or destination.
+
+  If invest, extract the following fields:
+  - to: the recipient of the investment, one of ['aave'].
   
   Only return the JSON, nothing else. Without any other text or comments.
   In the "description" field, return a description of the transaction, describing deeply the future transaction.
