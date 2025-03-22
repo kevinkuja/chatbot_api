@@ -24,6 +24,9 @@ const generateTransferTx = async (result: TransactionResult): Promise<EVMTransac
 const generateEVMTransferTx = async (result: TransactionResult): Promise<EVMTransaction> => {
   const chain = getChainId(result.chain);
   const token = getTokenAddress(chain as number, result.token);
+  if (!token) {
+    throw new Error(`Token ${result.token} not found on chain ${chain}`);
+  }
   const amount = parseUnits(result.amount.toString(), token.decimals);
   const tx = encodeFunctionData({
     abi: parseAbi(erc20Abi),
@@ -32,7 +35,7 @@ const generateEVMTransferTx = async (result: TransactionResult): Promise<EVMTran
   });
 
   return {
-    to: token.address,
+    to: token.address === NATIVE ? result.to : token.address,
     value: token.address === NATIVE ? amount.toString() : '0',
     data: token.address !== NATIVE ? tx : null,
   };

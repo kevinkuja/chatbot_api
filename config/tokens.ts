@@ -116,6 +116,10 @@ export const TOKENS: TokenList = {
   },
   [480]: {
     // Worldchain
+    ETH: {
+      address: NATIVE,
+      decimals: 18,
+    },
     WLD: {
       address: '0x2cFc85d8E48F8EAB294be644d9E25C3030863003',
       decimals: 18,
