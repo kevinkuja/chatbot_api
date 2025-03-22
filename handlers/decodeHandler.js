@@ -1,5 +1,5 @@
-import { processTextsWithAI } from "../helpers/index.js";
-import { generateTx } from "../helpers/actions.js";
+import { processTextsWithAI } from '../helpers/index.js';
+import { generateTx } from '../helpers/actions.js';
 
 /**
  * Handler for decoding text using OpenAI API
@@ -9,11 +9,11 @@ import { generateTx } from "../helpers/actions.js";
 export const decodeHandler = async (req, res) => {
   try {
     const { texts, chain } = req.body;
-    
+
     if (!texts || !Array.isArray(texts)) {
       return res.status(400).json({
-        status: "error",
-        message: "Request body must include 'texts' as an array of strings"
+        status: 'error',
+        message: "Request body must include 'texts' as an array of strings",
       });
     }
 
@@ -22,16 +22,17 @@ export const decodeHandler = async (req, res) => {
     const tx = await generateTx(chain, result);
 
     return res.json({
-      status: "success",
+      status: 'success',
       data: {
         parsed: result,
-        transaction: tx
-      }
+        transaction: tx,
+        chain: chain,
+      },
     });
   } catch (error) {
     return res.status(500).json({
-      status: "error",
-      message: error.message
+      status: 'error',
+      message: error.message,
     });
   }
-}; 
+};

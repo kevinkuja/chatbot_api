@@ -1,1 +1,1 @@
-export { decodeHandler } from './decodeHandler.js'; 
+export { decodeHandler } from './decodeHandler.js';
