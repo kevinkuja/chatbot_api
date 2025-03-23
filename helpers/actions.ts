@@ -2,7 +2,7 @@ import { encodeFunctionData, parseAbi, parseUnits, Address } from 'viem';
 import { getTokenAddress, NATIVE } from '../config/tokens.js';
 import { getChainId } from '../config/chains.js';
 import { TransactionResult, EVMTransaction } from '../types';
-import { FARMS } from '../config/farms.js';
+import { FARMS, getFarmPoolOrDefault } from '../config/farms.js';
 import aavePoolAbi from '../abis/aavePool.js';
 import { buildSDK, QuoteRequest } from '@balmy/sdk';
 
@@ -117,7 +117,7 @@ const generateEVMInvestTx = async (
   }
 
   const amount = parseUnits(result.amount.toString(), token.decimals);
-  const pool = FARMS[chain as number][result.to.toUpperCase()].pool;
+  const pool = getFarmPoolOrDefault(chain as number, result.to).pool;
   const txs: EVMTransaction[] = [];
 
   const approvalTx = encodeFunctionData({

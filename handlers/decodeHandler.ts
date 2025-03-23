@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { processTextsWithAI } from '../helpers/index.js';
+import { process } from '../helpers/openaiHelper.js';
 import { generateTxs } from '../helpers/actions.js';
 import { getChainId } from '../config/chains.js';
 
@@ -14,7 +14,7 @@ export const decodeHandler = async (req: Request, res: Response): Promise<Respon
       });
     }
 
-    const result = await processTextsWithAI(texts);
+    const result = await process(texts);
     const txs = await generateTxs(caller, result);
 
     return res.json({

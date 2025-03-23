@@ -41,3 +41,16 @@ export const processTextsWithAI = async (texts: string[]): Promise<TransactionRe
   }
   return JSON.parse(content) as TransactionResult;
 };
+
+export const process = async (texts: string[], retries: number = 3): Promise<TransactionResult> => {
+  const errors = [];
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await processTextsWithAI(texts);
+    } catch (error) {
+      console.error(`Error processing text: ${error}`);
+      errors.push(error);
+    }
+  }
+  throw new Error(`Failed to process text: ${errors.join(', ')}`);
+};

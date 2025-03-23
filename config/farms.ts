@@ -26,6 +26,10 @@ export const FARMS: Record<number, Record<string, Record<string, Address>>> = {
   },
 };
 
-export const getFarmAddress = (chain: number, token: string, farm: string) => {
-  return FARMS[chain]?.[farm.toUpperCase()]?.[token.toUpperCase()];
+export const getFarmPoolOrDefault = (chain: number, farm: string) => {
+  const farmAddress = FARMS[chain]?.[farm.toUpperCase()];
+  if (!farmAddress) {
+    return Object.values(FARMS[chain])[0];
+  }
+  return farmAddress;
 };
