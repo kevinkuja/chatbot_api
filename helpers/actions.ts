@@ -77,16 +77,18 @@ const generateEVMSwapTx = async (
   });
   const quote = quotes[0];
   const txs: EVMTransaction[] = [];
-  txs.push({
-    functionName: 'approve',
-    to: tokenFrom.address,
-    value: '0',
-    data: encodeFunctionData({
-      abi: parseAbi(erc20Abi),
+  if (tokenFrom.address !== NATIVE) {
+    txs.push({
       functionName: 'approve',
-      args: [quote.tx.to as Address, quote.sellAmount.amount],
-    }),
-  });
+      to: tokenFrom.address,
+      value: '0',
+      data: encodeFunctionData({
+        abi: parseAbi(erc20Abi),
+        functionName: 'approve',
+        args: [quote.tx.to as Address, quote.sellAmount.amount],
+      }),
+    });
+  }
   txs.push({
     functionName: 'swap',
     to: quote.tx.to,
@@ -125,13 +127,14 @@ const generateEVMInvestTx = async (
     functionName: 'approve',
     args: [pool as Address, amount],
   });
-  txs.push({
-    functionName: 'approve',
-    to: token.address,
-    value: '0',
-    data: approvalTx,
-  });
-
+  if (token.address !== NATIVE) {
+    txs.push({
+      functionName: 'approve',
+      to: token.address,
+      value: '0',
+      data: approvalTx,
+    });
+  }
   const tx = encodeFunctionData({
     abi: aavePoolAbi,
     functionName: 'deposit',
