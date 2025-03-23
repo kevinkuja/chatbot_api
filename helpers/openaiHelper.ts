@@ -42,7 +42,11 @@ export const processTextsWithAI = async (texts: string[]): Promise<TransactionRe
   if (!content) {
     throw new Error('No content returned from OpenAI');
   }
-  return JSON.parse(content) as TransactionResult;
+  return JSON.parse(cleanJson(content)) as TransactionResult;
+};
+
+const cleanJson = (json: string): string => {
+  return json.startsWith('json') ? json.slice(4).trim() : json;
 };
 
 export const process = async (texts: string[], retries: number = 3): Promise<TransactionResult> => {
