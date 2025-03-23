@@ -27,7 +27,10 @@ export const processTextsWithAI = async (texts: string[]): Promise<TransactionRe
   In the "description" field, return a description of the transaction, describing deeply the future transaction.
   In the "message" field, return a message to the user, describing the transaction.
 
-  Text: ${texts.join('\n')}`;
+  Current text: ${texts[texts.length - 1]}
+  
+  Previous texts: ${texts.slice(0, -1).join('\n')} only for context, not for the current text.
+  `;
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
