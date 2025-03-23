@@ -44,6 +44,11 @@ const generateEVMInvestTx = async (
 ): Promise<EVMTransaction[]> => {
   const chain = getChainId(result.chain);
   const token = getTokenAddress(chain as number, result.token);
+
+  if (!token) {
+    throw new Error(`Token ${result.token} not found on chain ${chain}`);
+  }
+
   const amount = parseUnits(result.amount.toString(), token.decimals);
   const pool = FARMS[chain as number][result.to.toUpperCase()].pool;
   const txs: EVMTransaction[] = [];
