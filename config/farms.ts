@@ -17,6 +17,13 @@ export const FARMS: Record<number, Record<string, Record<string, Address>>> = {
       WETH: '0xb7b93bCf82519bB757Fd18b23A389245Dbd8ca64',
     },
   }, // ZkSync
+  [5000]: {
+    LENDLE: {
+      pool: '0xCFa5aE7c2CE8Fadc6426C1ff872cA45378Fb7cF3',
+      USDC: '0xf36afb467d1f05541d998bbbcd5f7167d67bd8fc',
+      USDT: '0xe71cbaaa6b093fce66211e6f218780685077d8b5',
+    },
+  },
 };
 
 export const getFarmAddress = (chain: number, token: string, farm: string) => {

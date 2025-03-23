@@ -17,7 +17,7 @@ export const processTextsWithAI = async (texts: string[]): Promise<TransactionRe
   - to: the recipient address or destination.
 
   If invest, extract the following fields:
-  - to: the recipient of the investment, one of ['aave'].
+  - to: the recipient of the investment, one of ['aave', 'lendle'].
   
   Only return the JSON, nothing else. Without any other text or comments.
   In the "description" field, return a description of the transaction, describing deeply the future transaction.
