@@ -10,7 +10,7 @@ export interface TokenList {
 }
 
 export interface TransactionResult {
-  action: 'transfer';
+  action: 'transfer' | 'invest';
   amount: number;
   token: string;
   to: string;
@@ -20,6 +20,7 @@ export interface TransactionResult {
 }
 
 export interface EVMTransaction {
+  functionName: string;
   to: string;
   value: string;
   data: string | null;
