@@ -10,13 +10,15 @@ export interface TokenList {
 }
 
 export interface TransactionResult {
-  action: 'transfer' | 'invest';
+  action: 'transfer' | 'invest' | 'swap';
   amount: number;
   token: string;
   to: string;
   chain: string;
   description?: string;
   message?: string;
+  tokenFrom?: string;
+  tokenTo?: string;
 }
 
 export interface EVMTransaction {

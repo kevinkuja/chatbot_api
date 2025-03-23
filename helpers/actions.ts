@@ -4,6 +4,7 @@ import { getChainId } from '../config/chains.js';
 import { TransactionResult, EVMTransaction } from '../types';
 import { FARMS } from '../config/farms.js';
 import aavePoolAbi from '../abis/aavePool.js';
+import { buildSDK, QuoteRequest } from '@balmy/sdk';
 
 const erc20Abi = [
   'function transfer(address, uint256)',
@@ -22,12 +23,78 @@ export const generateTxs = async (
     case 'invest':
       txs.push(...(await generateInvestTx(caller, result)));
       break;
+    case 'swap':
+      txs.push(...(await generateSwapTx(caller, result)));
+      break;
     default:
       return Promise.resolve([]);
   }
   return txs;
 };
 
+const generateSwapTx = async (
+  caller: Address,
+  result: TransactionResult
+): Promise<EVMTransaction[]> => {
+  switch (result.chain) {
+    default:
+      return generateEVMSwapTx(caller, result);
+  }
+};
+
+const generateEVMSwapTx = async (
+  caller: Address,
+  result: TransactionResult
+): Promise<EVMTransaction[]> => {
+  const sdk = buildSDK({});
+  const chain = getChainId(result.chain);
+  const tokenFrom = getTokenAddress(chain as number, result.tokenFrom!);
+  if (!tokenFrom) {
+    throw new Error(`Token ${result.tokenFrom} not found on chain ${chain}`);
+  }
+  const tokenTo = getTokenAddress(chain as number, result.tokenTo!);
+  if (!tokenTo) {
+    throw new Error(`Token ${result.tokenTo} not found on chain ${chain}`);
+  }
+  const amount = parseUnits(result.amount.toString(), tokenFrom.decimals);
+  const quoteRequest: QuoteRequest = {
+    chainId: chain as number,
+    sellToken: tokenFrom.address,
+    buyToken: tokenTo.address,
+    order: {
+      type: 'sell',
+      sellAmount: amount,
+    },
+    slippagePercentage: 0.3,
+    takerAddress: caller,
+    recipient: caller,
+  };
+  const quotes = await sdk.quoteService.getAllQuotes({
+    request: quoteRequest,
+    config: {
+      timeout: '10s',
+    },
+  });
+  const quote = quotes[0];
+  const txs: EVMTransaction[] = [];
+  txs.push({
+    functionName: 'approve',
+    to: tokenFrom.address,
+    value: '0',
+    data: encodeFunctionData({
+      abi: parseAbi(erc20Abi),
+      functionName: 'approve',
+      args: [quote.source.allowanceTarget as Address, quote.buyAmount.amount],
+    }),
+  });
+  txs.push({
+    functionName: 'swap',
+    to: quote.source.allowanceTarget,
+    value: quote.customData.value ?? '0',
+    data: quote.customData.txData,
+  });
+  return txs;
+};
 const generateInvestTx = async (
   caller: Address,
   result: TransactionResult
