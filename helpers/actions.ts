@@ -5,16 +5,22 @@ import { TransactionResult, EVMTransaction } from '../types';
 import { FARMS } from '../config/farms.js';
 import aavePoolAbi from '../abis/aavePool.js';
 
-const erc20Abi = ['function transfer(address, uint256)', 'function approve(address, uint256)'] as const;
+const erc20Abi = [
+  'function transfer(address, uint256)',
+  'function approve(address, uint256)',
+] as const;
 
-export const generateTxs = async (caller: Address, result: TransactionResult): Promise<EVMTransaction[]> => {
+export const generateTxs = async (
+  caller: Address,
+  result: TransactionResult
+): Promise<EVMTransaction[]> => {
   const txs: EVMTransaction[] = [];
   switch (result.action) {
     case 'transfer':
       txs.push(await generateTransferTx(result));
       break;
     case 'invest':
-      txs.push(...await generateInvestTx(caller, result));
+      txs.push(...(await generateInvestTx(caller, result)));
       break;
     default:
       return Promise.resolve([]);
@@ -22,26 +28,33 @@ export const generateTxs = async (caller: Address, result: TransactionResult): P
   return txs;
 };
 
-const generateInvestTx = async (caller: Address, result: TransactionResult): Promise<EVMTransaction[]> => {
+const generateInvestTx = async (
+  caller: Address,
+  result: TransactionResult
+): Promise<EVMTransaction[]> => {
   switch (result.chain) {
     default:
       return generateEVMInvestTx(caller, result);
   }
 };
 
-const generateEVMInvestTx = async (caller: Address, result: TransactionResult): Promise<EVMTransaction[]> => {
+const generateEVMInvestTx = async (
+  caller: Address,
+  result: TransactionResult
+): Promise<EVMTransaction[]> => {
   const chain = getChainId(result.chain);
   const token = getTokenAddress(chain as number, result.token);
   const amount = parseUnits(result.amount.toString(), token.decimals);
   const pool = FARMS[chain as number][result.to.toUpperCase()].pool;
-  const txs = []
+  const txs: EVMTransaction[] = [];
 
   const approvalTx = encodeFunctionData({
     abi: parseAbi(erc20Abi),
     functionName: 'approve',
     args: [pool as Address, amount],
   });
-  txs.push( {
+  txs.push({
+    functionName: 'approve',
     to: token.address,
     value: '0',
     data: approvalTx,
@@ -53,8 +66,9 @@ const generateEVMInvestTx = async (caller: Address, result: TransactionResult): 
     args: [token.address as Address, amount, caller as Address, 0],
   });
   txs.push({
+    functionName: 'deposit',
     to: pool,
-    value: "0",
+    value: '0',
     data: tx,
   });
   return txs;
@@ -81,6 +95,7 @@ const generateEVMTransferTx = async (result: TransactionResult): Promise<EVMTran
   });
 
   return {
+    functionName: 'transfer',
     to: token.address === NATIVE ? result.to : token.address,
     value: token.address === NATIVE ? amount.toString() : '0',
     data: token.address !== NATIVE ? tx : null,

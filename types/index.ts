@@ -20,6 +20,7 @@ export interface TransactionResult {
 }
 
 export interface EVMTransaction {
+  functionName: string;
   to: string;
   value: string;
   data: string | null;
