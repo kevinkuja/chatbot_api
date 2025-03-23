@@ -84,14 +84,14 @@ const generateEVMSwapTx = async (
     data: encodeFunctionData({
       abi: parseAbi(erc20Abi),
       functionName: 'approve',
-      args: [quote.source.allowanceTarget as Address, quote.buyAmount.amount],
+      args: [quote.source.allowanceTarget as Address, quote.sellAmount.amount],
     }),
   });
   txs.push({
     functionName: 'swap',
     to: quote.source.allowanceTarget,
     value: quote.customData.value ?? '0',
-    data: quote.customData.txData,
+    data: quote.customData.callData,
   });
   return txs;
 };
