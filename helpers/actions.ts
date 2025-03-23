@@ -69,7 +69,7 @@ const generateEVMSwapTx = async (
     takerAddress: caller,
     recipient: caller,
   };
-  const quotes = await sdk.quoteService.getAllQuotes({
+  const quotes = await sdk.quoteService.getAllQuotesWithTxs({
     request: quoteRequest,
     config: {
       timeout: '10s',
@@ -84,14 +84,14 @@ const generateEVMSwapTx = async (
     data: encodeFunctionData({
       abi: parseAbi(erc20Abi),
       functionName: 'approve',
-      args: [quote.source.allowanceTarget as Address, quote.sellAmount.amount],
+      args: [quote.tx.to as Address, quote.sellAmount.amount],
     }),
   });
   txs.push({
     functionName: 'swap',
-    to: quote.source.allowanceTarget,
-    value: quote.customData.value ?? '0',
-    data: quote.customData.callData,
+    to: quote.tx.to,
+    value: quote.tx.value?.toString() ?? '0',
+    data: quote.tx.data,
   });
   return txs;
 };
