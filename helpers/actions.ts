@@ -49,7 +49,13 @@ const generateEVMSwapTx = async (
   const sdk = buildSDK({});
   const chain = getChainId(result.chain);
   const tokenFrom = getTokenAddress(chain as number, result.tokenFrom!);
+  if (!tokenFrom) {
+    throw new Error(`Token ${result.tokenFrom} not found on chain ${chain}`);
+  }
   const tokenTo = getTokenAddress(chain as number, result.tokenTo!);
+  if (!tokenTo) {
+    throw new Error(`Token ${result.tokenTo} not found on chain ${chain}`);
+  }
   const amount = parseUnits(result.amount.toString(), tokenFrom.decimals);
   const quoteRequest: QuoteRequest = {
     chainId: chain as number,
