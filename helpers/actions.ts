@@ -167,6 +167,11 @@ const generateEVMTransferTx = async (result: TransactionResult): Promise<EVMTran
   });
 
   return {
+    functionData: {
+      abi: parseAbi(erc20Abi),
+      functionName: 'transfer',
+      args: [result.to as Address, amount.toString()],
+    },
     functionName: 'transfer',
     to: token.address === NATIVE ? result.to : token.address,
     value: token.address === NATIVE ? amount.toString() : '0',

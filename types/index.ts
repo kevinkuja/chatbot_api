@@ -26,4 +26,5 @@ export interface EVMTransaction {
   to: string;
   value: string;
   data: string | null;
+  functionData?: any;
 }
